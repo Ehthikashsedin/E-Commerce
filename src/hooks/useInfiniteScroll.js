@@ -34,7 +34,6 @@ const useInfiniteScroll = (callback) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Return a dummy ref since we're using scroll events instead
   return useRef();
 };
 
