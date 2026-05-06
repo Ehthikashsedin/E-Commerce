@@ -14,16 +14,13 @@ const useInfiniteScroll = (callback) => {
     const handleScroll = () => {
       const now = Date.now();
       
-      // Throttle - only check every 500ms
       if (now - lastCallTimeRef.current < THROTTLE_DELAY) {
         return;
       }
 
-      // Check if user has scrolled to near bottom
       const scrollPosition = window.innerHeight + window.scrollY;
       const pageHeight = document.documentElement.scrollHeight;
-      
-      // Trigger when 200px from bottom
+
       if (scrollPosition >= pageHeight - 200) {
         lastCallTimeRef.current = now;
         callbackRef.current();
@@ -34,7 +31,6 @@ const useInfiniteScroll = (callback) => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Return a dummy ref since we're using scroll events instead
   return useRef();
 };
 

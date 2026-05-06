@@ -28,7 +28,6 @@ const productsSlice = createSlice({
   initialState,
   reducers: {
     loadMore: (state) => {
-      // Don't load if already loading or no more items
       if (!state.hasMore || state.loadingMore) {
         return;
       }
