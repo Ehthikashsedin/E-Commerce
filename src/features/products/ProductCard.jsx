@@ -14,10 +14,18 @@ const ProductCard=({product,view}) =>{
                 <p className="product-price">Rs.{product.price}</p>
                 <p className="product-stock">{getStockMessage(product.stock)}</p>
             
-            <button onClick={() => dispatch(addToCart(product))} className="add-to-cart-button">
-                Add to Cart
+            <button 
+                onClick={() => dispatch(addToCart(product))} 
+                className="add-to-cart-button"
+                disabled={product.stock === 0}
+                style={{
+                  opacity: product.stock === 0 ? 0.5 : 1,
+                  cursor: product.stock === 0 ? "not-allowed" : "pointer"
+                }}
+            >
+                {product.stock === 0 ? "Out of Stock" : "Add to Cart"}
             </button>
-            <Link to={`/products/${product.id}`} className="view-details-link">
+            <Link to={`/product/${product.id}`} className="view-details-link">
                 View Details
             </Link>
             </div> 

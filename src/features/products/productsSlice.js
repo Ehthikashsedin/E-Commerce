@@ -12,8 +12,9 @@ const initialState = {
   items: [],
   visibleItems: [],
   loading: false,
+  loadingMore: false,
   error: null,
-  page: 1,
+  page: 0,
   hasMore: true,
   view: "grid",
   search: "",
@@ -27,16 +28,26 @@ const productsSlice = createSlice({
   initialState,
   reducers: {
     loadMore: (state) => {
-      const start =state.page * PAGE_SIZE;
-      const nextItems =filteredProducts(state).slice(
-        start,
-        start +PAGE_SIZE
-      );
-      state.visibleItems.push(...nextItems);
-      state.page+=1;
-      if (nextItems.length < PAGE_SIZE) {
-        state.hasMore = false;
+      // Don't load if already loading or no more items
+      if (!state.hasMore || state.loadingMore) {
+        return;
       }
+      
+      state.loadingMore = true;
+      const filtered = filteredProducts(state);
+      const start = (state.page + 1) * PAGE_SIZE;
+      const nextItems = filtered.slice(start, start + PAGE_SIZE);
+      
+      if (nextItems.length === 0) {
+        state.hasMore = false;
+        state.loadingMore = false;
+        return;
+      }
+      
+      state.visibleItems.push(...nextItems);
+      state.page += 1;
+      state.hasMore = ((state.page + 1) * PAGE_SIZE) < filtered.length;
+      state.loadingMore = false;
     },
    
     setView: (state, action) => {
@@ -60,10 +71,13 @@ const productsSlice = createSlice({
       .addCase(fetchProducts.fulfilled, (state, action) => {
         state.loading = false;
         state.items = action.payload;
-        state.visibleItems = filteredProducts({
+        const filtered = filteredProducts({
           ...state,
           items: action.payload,
-        }).slice(0, PAGE_SIZE);
+        });
+        state.visibleItems = filtered.slice(0, PAGE_SIZE);
+        state.hasMore = filtered.length > PAGE_SIZE;
+        state.page = 0;
       })
       .addCase(fetchProducts.rejected, (state) => {
         state.loading = false;
@@ -85,11 +99,10 @@ function filteredProducts(state) {
 }
 
 function resetPagination(state) {
-  state.page=1;
-  const filtered =filteredProducts(state);
-
-  state.visibleItems= filtered.slice(0, PAGE_SIZE);
-  state.hasMore =filtered.length> PAGE_SIZE;
+  state.page = 0;
+  const filtered = filteredProducts(state);
+  state.visibleItems = filtered.slice(0, PAGE_SIZE);
+  state.hasMore = filtered.length > PAGE_SIZE;
 }
 
 export const {
