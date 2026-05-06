@@ -1,5 +1,8 @@
+import { useEffect } from "react";
+import { useDispatch } from "react-redux";
 import Filters from "../features/products/Filters";
 import ProductList from "../features/products/ProductList";
+import { fetchProducts } from "../features/products/productsSlice";
 
 const Home = () => {
     const dispatch = useDispatch();
@@ -10,9 +13,8 @@ const Home = () => {
         <>
             <Filters />
             <ProductList />
-            <Cart/>
-        
         </>
     );
 };
-    export default Home;
+
+export default Home;
